@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Website Detector | Machine Learning Security Analysis</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="cyber-background"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="shield-logo">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <div class="header-text">
+                <h1>Phishing Website Detector</h1>
+                <p class="subtitle">Machine Learning Based URL Security Analysis</p>
+            </div>
+        </header>
+
+        <!-- DISCLAIMER BANNER -->
+        <div class="disclaimer-banner">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>
+                <strong>Security Disclaimer:</strong> This application analyzes URL pattern characteristics locally using a trained Machine Learning model. It does not visit or crawl the submitted site. Prediction is an ML-based assessment and is not a 100% guarantee of safety.
+            </span>
+        </div>
+
+        <!-- MAIN CONTENT GRID -->
+        <main class="dashboard-grid">
+            <!-- URL ANALYZER CARD -->
+            <section class="card analyzer-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-magnifying-glass-chart"></i> Analyze Website URL</h2>
+                    <span class="badge-tag"><i class="fas fa-bolt"></i> Real-time ML Inference</span>
+                </div>
+
+                <form id="urlForm" onsubmit="analyzeUrl(event)">
+                    <div class="input-group">
+                        <span class="input-icon"><i class="fas fa-link"></i></span>
+                        <input 
+                            type="text" 
+                            id="urlInput" 
+                            placeholder="Enter URL e.g. https://example.com" 
+                            autocomplete="off" 
+                            required
+                        />
+                        <button type="submit" id="analyzeBtn" class="btn-primary">
+                            <span id="btnText"><i class="fas fa-shield-virus"></i> Analyze URL</span>
+                            <span id="btnSpinner" class="spinner hidden"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- PRESET SAMPLES FOR VIVA DEMO -->
+                <div class="quick-samples">
+                    <span class="sample-label">Quick Test Presets:</span>
+                    <button type="button" class="preset-btn" onclick="fillPreset('https://www.google.com')">
+                        <i class="fas fa-check-circle text-success"></i> Legitimate (Google)
+                    </button>
+                    <button type="button" class="preset-btn" onclick="fillPreset('http://192.168.1.1/login.php?verify=account@paypal')">
+                        <i class="fas fa-bug text-danger"></i> Phishing (IP Login)
+                    </button>
+                    <button type="button" class="preset-btn" onclick="fillPreset('http://paypal-verification-update-security-alert.com/webscr')">
+                        <i class="fas fa-user-ninja text-danger"></i> Phishing (Spoof Keyword)
+                    </button>
+                </div>
+            </section>
+
+            <!-- PREDICTION RESULT CARD -->
+            <section id="resultCard" class="card result-card hidden">
+                <div class="card-header">
+                    <h2><i class="fas fa-square-poll-vertical"></i> Security Assessment Result</h2>
+                    <span id="timestampBadge" class="timestamp"></span>
+                </div>
+
+                <div class="result-body">
+                    <div class="result-main-box">
+                        <div class="prediction-status-container">
+                            <span class="status-title">Prediction Result</span>
+                            <div id="predictionBadge" class="prediction-badge">
+                                <!-- Dynamic LEGITIMATE / PHISHING -->
+                            </div>
+                        </div>
+
+                        <div class="confidence-container">
+                            <span class="confidence-title">Model Confidence</span>
+                            <div class="confidence-meter">
+                                <svg class="progress-ring" width="100" height="100">
+                                    <circle class="progress-ring-circle-bg" stroke="#1e293b" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                                    <circle id="progressCircle" class="progress-ring-circle" stroke="#00f2fe" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" fill="transparent" r="40" cx="50" cy="50"/>
+                                </svg>
+                                <span id="confidenceText" class="confidence-number">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="explanation-box">
+                        <h4><i class="fas fa-circle-info"></i> Security Verdict Explanation</h4>
+                        <p id="explanationText">--</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- URL EXTRACTED FEATURES GRID -->
+            <section id="featuresSection" class="card features-card hidden">
+                <div class="card-header">
+                    <h2><i class="fas fa-list-check"></i> Extracted URL Characteristics</h2>
+                    <span class="badge-tag">12 Structural Features</span>
+                </div>
+                <div id="featuresGrid" class="features-grid">
+                    <!-- Dynamically populated via JS -->
+                </div>
+            </section>
+
+            <!-- MODEL PERFORMANCE & ANALYTICS DASHBOARD -->
+            <section class="card analytics-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Machine Learning Model Performance</h2>
+                    <span id="bestModelBadge" class="badge-highlight">Best Model: Random Forest</span>
+                </div>
+
+                <div class="analytics-body">
+                    <div class="chart-container">
+                        <h3>Model Metric Comparison (Test Set)</h3>
+                        <canvas id="metricsChart" height="240"></canvas>
+                    </div>
+
+                    <div class="cm-and-info">
+                        <h3>Confusion Matrix (<span id="activeModelName">Selected Model</span>)</h3>
+                        <div class="confusion-matrix-grid">
+                            <div class="cm-box cm-tn">
+                                <span class="cm-value" id="cmTN">0</span>
+                                <span class="cm-label">True Negative (Legitimate Correct)</span>
+                            </div>
+                            <div class="cm-box cm-fp">
+                                <span class="cm-value" id="cmFP">0</span>
+                                <span class="cm-label">False Positive (False Alarm)</span>
+                            </div>
+                            <div class="cm-box cm-fn">
+                                <span class="cm-value" id="cmFN">0</span>
+                                <span class="cm-label">False Negative (Missed Threat)</span>
+                            </div>
+                            <div class="cm-box cm-tp">
+                                <span class="cm-value" id="cmTP">0</span>
+                                <span class="cm-label">True Positive (Phishing Correct)</span>
+                            </div>
+                        </div>
+
+                        <div class="models-summary-list">
+                            <h4>Evaluated Algorithms</h4>
+                            <ul>
+                                <li><i class="fas fa-check text-cyan"></i> <strong>Logistic Regression:</strong> Baseline linear classification model</li>
+                                <li><i class="fas fa-check text-cyan"></i> <strong>Decision Tree:</strong> Non-linear decision split tree model</li>
+                                <li><i class="fas fa-star text-gold"></i> <strong>Random Forest:</strong> Ensemble forest of decision trees (Selected)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="main-footer">
+            <p>&copy; 2026 Phishing Website Detection System | Computer Science & Engineering Mini-Project</p>
+        </footer>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
