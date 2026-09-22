@@ -1,0 +1,67 @@
+{
+    "best_model": "Random Forest",
+    "feature_names": [
+        "url_length",
+        "num_dots",
+        "num_subdomains",
+        "num_hyphens",
+        "num_special_chars",
+        "has_at_symbol",
+        "has_ip_address",
+        "use_https",
+        "num_digits",
+        "num_params",
+        "url_depth",
+        "has_suspicious_keyword"
+    ],
+    "models": {
+        "Logistic Regression": {
+            "accuracy": 100.0,
+            "precision": 100.0,
+            "recall": 100.0,
+            "f1_score": 100.0,
+            "confusion_matrix": [
+                [
+                    100,
+                    0
+                ],
+                [
+                    0,
+                    100
+                ]
+            ]
+        },
+        "Decision Tree": {
+            "accuracy": 100.0,
+            "precision": 100.0,
+            "recall": 100.0,
+            "f1_score": 100.0,
+            "confusion_matrix": [
+                [
+                    100,
+                    0
+                ],
+                [
+                    0,
+                    100
+                ]
+            ]
+        },
+        "Random Forest": {
+            "accuracy": 100.0,
+            "precision": 100.0,
+            "recall": 100.0,
+            "f1_score": 100.0,
+            "confusion_matrix": [
+                [
+                    100,
+                    0
+                ],
+                [
+                    0,
+                    100
+                ]
+            ]
+        }
+    }
+}
